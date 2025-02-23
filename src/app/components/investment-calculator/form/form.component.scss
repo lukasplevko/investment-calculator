@@ -1,0 +1,17 @@
+
+
+.form-input-wrapper{
+  display: flex;
+  flex-flow: column;
+  padding: 1rem;
+  gap: 1rem;
+
+  &__align-start{
+    align-items: flex-start;
+  }
+}
+
+.form-input-group{
+  display: flex;
+  flex-flow: column;
+}

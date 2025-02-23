@@ -1,0 +1,13 @@
+.investment-calculator-container{
+  max-width: 520px;
+  width: 100%;
+  margin: 3rem auto;
+  display: flex;
+  flex-flow: column;
+  align-items:center;
+  gap: 2rem;
+
+  mat-label{
+    font-weight: 500;
+  }
+}
