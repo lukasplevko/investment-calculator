@@ -1,0 +1,5 @@
+{
+ "required": "Toto pole je povinné",
+  "min": "Minimálna hodnota je :[minlength]",
+  "max": "Maximálna hodnota je :[maxlength]"
+}

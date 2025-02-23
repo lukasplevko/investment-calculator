@@ -1,12 +1,14 @@
-import {Component} from '@angular/core';
+import {Component, EventEmitter, OnInit, output} from '@angular/core';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {MatDivider} from '@angular/material/divider';
-import {MatFormField, MatLabel, MatPrefix} from '@angular/material/form-field';
+import {MatError, MatFormField, MatLabel, MatPrefix} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatSlider, MatSliderThumb} from '@angular/material/slider';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators} from '@angular/forms';
 import {EInvestmentStrategies} from '../../../enums/investment-strategies';
 import {EInvestmentScenarios} from '../../../enums/investment-scenarios';
+import {debounceTime, map} from 'rxjs';
+import {InvestmentCalculationInputs} from '../../../interfaces/investment-calculation-inputs';
 
 @Component({
   selector: 'investment-calculator-form',
@@ -20,19 +22,24 @@ import {EInvestmentScenarios} from '../../../enums/investment-scenarios';
     MatPrefix,
     MatSlider,
     MatSliderThumb,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatError,
   ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss'
 })
-export class FormComponent {
+export class FormComponent implements OnInit{
 
-  DEFAULT_INVESTMENT_SETTINGS = {
+  private readonly DEFAULT_INVESTMENT_SETTINGS = {
     MINIMAL_MONTHLY_INVESTMENT:20,
     MAXIMAL_MONTHLY_INVESTMENT:1000,
+    MINIMAL_INITIAL_INVESTMENT:20,
+    MAXIMAL_INITIAL_INVESTMENT:100000,
     MINIMAL_INVESTMENT_DURATION:2,
     MAXIMAL_INVESTMENT_DURATION:30,
   }
+
+  onFormValuesChanged = output<InvestmentCalculationInputs>();
 
   private defaultValidations(
     min=this.DEFAULT_INVESTMENT_SETTINGS.MINIMAL_MONTHLY_INVESTMENT,
@@ -45,28 +52,57 @@ export class FormComponent {
   }
 
   investmentCalculatorForm = new FormGroup({
-    monthlyInvestment: new FormControl(20,[...this.defaultValidations()]),
-    initialInvestment: new FormControl(20,[...this.defaultValidations()]),
+    monthlyInvestment: new FormControl(20,[
+      Validators.required,
+      Validators.min(this.minimalMonthlyInvestment),
+      Validators.max(this.maximalMonthlyInvestment)
+    ]),
+    initialInvestment: new FormControl(20,[
+      Validators.required,
+      Validators.min(this.minimalInitialInvestment),
+      Validators.max(this.maximalInitialInvestment),
+    ]),
     investmentDuration:new FormControl(2,[
-      ...this.defaultValidations(
-        this.DEFAULT_INVESTMENT_SETTINGS.MINIMAL_INVESTMENT_DURATION,
-        this.DEFAULT_INVESTMENT_SETTINGS.MAXIMAL_INVESTMENT_DURATION,
-      )]
+      Validators.required,
+      Validators.min(this.minimalInvestmentDuration),
+      Validators.max(this.maximalInvestmentDuration),
+      ]
     ),
     investmentStrategy: new FormControl<EInvestmentStrategies>(
       EInvestmentStrategies.conservative,[
-      Validators.required,
-    ]),
-    investmentScenarios: new FormControl<EInvestmentScenarios>(
+        Validators.required,
+      ]),
+    investmentScenario: new FormControl<EInvestmentScenarios>(
       EInvestmentScenarios.neutral,
       [
         Validators.required
       ]),
   })
+
+  ngOnInit() {
+
+    this.onFormValuesChanged.emit(this.investmentCalculatorForm.getRawValue() as InvestmentCalculationInputs)
+
+    this.investmentCalculatorForm.valueChanges.
+    pipe(
+      debounceTime(300),
+      map((val)=>val as InvestmentCalculationInputs)
+    )
+      .subscribe((values)=>{
+      this.onFormValuesChanged.emit(values);
+    })
+
+  }
+
+
   protected readonly EInvestmentStrategies = EInvestmentStrategies;
   protected readonly EInvestmentScenarios = EInvestmentScenarios;
-
-
+  get minimalMonthlyInvestment(){return this.DEFAULT_INVESTMENT_SETTINGS.MINIMAL_MONTHLY_INVESTMENT}
+  get maximalMonthlyInvestment(){return this.DEFAULT_INVESTMENT_SETTINGS.MAXIMAL_MONTHLY_INVESTMENT}
+  get minimalInvestmentDuration(){return this.DEFAULT_INVESTMENT_SETTINGS.MINIMAL_INVESTMENT_DURATION}
+  get maximalInvestmentDuration(){return this.DEFAULT_INVESTMENT_SETTINGS.MAXIMAL_INVESTMENT_DURATION}
+  get minimalInitialInvestment(){return this.DEFAULT_INVESTMENT_SETTINGS.MINIMAL_INITIAL_INVESTMENT}
+  get maximalInitialInvestment(){return this.DEFAULT_INVESTMENT_SETTINGS.MAXIMAL_INITIAL_INVESTMENT}
   get monthlyInvestment(){return this.investmentCalculatorForm.get('monthlyInvestment')}
   get initialInvestment(){return this.investmentCalculatorForm.get('initialInvestment')}
   get investmentDuration(){return this.investmentCalculatorForm.get('investmentDuration')}
@@ -74,5 +110,19 @@ export class FormComponent {
   get investmentScenario(){return this.investmentCalculatorForm.get('investmentScenarios')}
 
 
+
+
+  message(errors:ValidationErrors){
+    if(errors["min"]){
+      return `Minimálna hodnota poľa je ${errors["min"].min}`
+    }
+    if(errors["max"]){
+      return `Maximálna hodnota poľa je ${errors["max"].max}`
+    }
+    if(errors["required"]){
+      return `Toto pole je povinné`
+    }
+    return
+  }
 
 }

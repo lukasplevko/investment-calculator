@@ -1,5 +1,15 @@
 <div class="investment-calculator-container">
-  <investment-calculator-header/>
-  <investment-calculator-form class="investment-calculator-form"/>
-  <investment-graph/>
+  <mat-tab-group>
+    <mat-tab label="Koľko chcem investovať">
+      <investment-calculator-form class="investment-calculator-form" (onFormValuesChanged)="manageInvestmentCalculations($event)"/>
+      <investment-graph [investmentResults]="investmentResults()"/>
+    </mat-tab>
+
+    <mat-tab label="Koľko chcem získať">
+    Content 2
+    </mat-tab>
+
+  </mat-tab-group>
+
+
 </div>

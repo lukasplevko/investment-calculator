@@ -4,13 +4,16 @@
       <mat-label>Pravidelný mesačný vklad</mat-label>
 
       <div class="form-input-group">
-        <mat-slider min="20" max="1000" step="1" showTickMarks discrete>
-          <input matSliderThumb formControlName="monthlyInvestment" [value]="monthlyInvestment">
+        <mat-slider [min]="minimalMonthlyInvestment" [max]="maximalMonthlyInvestment" step="1"  >
+          <input matSliderThumb formControlName="monthlyInvestment"  [value]="monthlyInvestment?.value">
         </mat-slider>
         <mat-form-field floatLabel="always">
           <mat-label>Suma</mat-label>
-          <input matInput type="number" class="example-right-align" formControlName="monthlyInvestment" [value]="monthlyInvestment"/>
+          <input matInput type="number" class="example-right-align" formControlName="monthlyInvestment" [value]="monthlyInvestment?.value"/>
           <span matTextPrefix class="input-prefix">€&nbsp;</span>
+          @if (monthlyInvestment && monthlyInvestment.errors){
+            <mat-error> {{ message(monthlyInvestment.errors) }}</mat-error>
+          }
         </mat-form-field>
 
       </div>
@@ -21,14 +24,17 @@
     <div class="form-input-wrapper">
       <mat-label>Jednorázový počiatočný vklad</mat-label>
       <div class="form-input-group">
-        <mat-slider min="20" max="1000" step="1" showTickMarks discrete>
-          <input matSliderThumb formControlName="initialInvestment" [value]="initialInvestment">
+        <mat-slider [min]="minimalInitialInvestment" [max]="maximalInitialInvestment" step="80" >
+          <input matSliderThumb formControlName="initialInvestment" [value]="initialInvestment?.value">
         </mat-slider>
         <mat-form-field floatLabel="always">
           <mat-label>Suma</mat-label>
-          <input matInput type="number" class="example-right-align" formControlName="initialInvestment" [value]="initialInvestment"/>
+          <input matInput type="number" class="example-right-align" formControlName="initialInvestment" [value]="initialInvestment?.value"/>
           <span matTextPrefix class="input-prefix">€&nbsp;</span>
-        </mat-form-field>
+          @if (initialInvestment && initialInvestment.errors){
+            <mat-error> {{ message(initialInvestment.errors) }}</mat-error>
+          }
+        </mat-form-field >
       </div>
 
     </div>
@@ -37,12 +43,15 @@
     <div class="form-input-wrapper">
       <mat-label>Doba trvania investície</mat-label>
       <div class="form-input-group">
-        <mat-slider min="2" max="30" step="1" showTickMarks discrete>
-          <input matSliderThumb formControlName="investmentDuration" [value]="investmentDuration">
+        <mat-slider [min]="minimalInvestmentDuration" [max]="maximalInvestmentDuration" step="1" showTickMarks discrete>
+          <input matSliderThumb formControlName="investmentDuration" [value]="investmentDuration?.value">
         </mat-slider>
         <mat-form-field floatLabel="always">
           <mat-label>Počet rokov</mat-label>
-          <input matInput type="number" formControlName="investmentDuration" class="example-right-align" [value]="investmentDuration"/>
+          <input matInput type="number" formControlName="investmentDuration" class="example-right-align" [value]="investmentDuration?.value"/>
+          @if (investmentDuration && investmentDuration.errors){
+            <mat-error> {{ message(investmentDuration.errors) }}</mat-error>
+          }
         </mat-form-field>
       </div>
 
@@ -50,12 +59,11 @@
   </div>
 
 
-
   <div class="form-row">
     <mat-divider/>
     <div class="form-input-wrapper form-input-wrapper__align-start">
       <mat-label>Zvoľte investičnú stratégiu</mat-label>
-      <mat-button-toggle-group name="selector" aria-label="Selector" formControlName="investmentStrategy" [value]="investmentStrategy" >
+      <mat-button-toggle-group name="selector" aria-label="Selector" formControlName="investmentStrategy" [value]="investmentStrategy?.value" >
         <mat-button-toggle [value]="EInvestmentStrategies.conservative">Konzervatívna</mat-button-toggle>
         <mat-button-toggle [value]="EInvestmentStrategies.balanced">Vyvážená</mat-button-toggle>
         <mat-button-toggle [value]="EInvestmentStrategies.growth">Rastová</mat-button-toggle>
@@ -68,7 +76,7 @@
   <div class="form-row">
     <div class="form-input-wrapper form-input-wrapper__align-start">
       <mat-label>Zvoľte scenár vývoja trhov</mat-label>
-      <mat-button-toggle-group name="selector" aria-label="Selector" formControlName="investmentScenario" [value]="investmentScenario" >
+      <mat-button-toggle-group name="selector" aria-label="Selector" formControlName="investmentScenario" [value]="investmentScenario?.value" >
         <mat-button-toggle [value]="EInvestmentScenarios.pessimistic">Pesimistický</mat-button-toggle>
         <mat-button-toggle [value]="EInvestmentScenarios.neutral">Neutrálny</mat-button-toggle>
         <mat-button-toggle [value]="EInvestmentScenarios.optimistic">Optimistický</mat-button-toggle>

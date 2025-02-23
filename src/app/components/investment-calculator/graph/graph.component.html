@@ -1,3 +1,36 @@
+
 <div class="investment-pie-container">
+
+  <header class="investment-stats">
+    <div class="investment-box">
+      <span>
+        Investované:
+      </span>
+      <p class="investment-box__invested">
+        {{investmentResults()?.invested | currency: 'EUR' }}
+      </p>
+    </div>
+
+    <div class="investment-box">
+      <span>
+        Zisk:
+      </span>
+      <p class="investment-box__profit">
+        {{investmentResults()?.profit | currency:'EUR'}}
+      </p>
+    </div>
+
+    <div class="investment-box">
+      <span>
+        Spolu:
+      </span>
+      <p class="investment-box__sum">
+        @if (investmentResults()?.invested && investmentResults()?.profit){
+          {{(investmentResults()?.profit! + investmentResults()?.invested!) | currency:'EUR'}}
+        }
+      </p>
+    </div>
+  </header>
+
   <canvas id="investment-pie" #investmentPieCanvas></canvas>
 </div>
