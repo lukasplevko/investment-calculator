@@ -13,15 +13,15 @@ import {CurrencyPipe} from '@angular/common';
 export class GraphComponent implements OnInit {
 
   canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('investmentPieCanvas');
-  investmentResults = input<InvestmentResults>()
+  investmentResults = input.required<InvestmentResults>()
 
   chart:Chart | null = null;
 
   constructor() {
     effect(()=>{
       this.chart?.data.datasets.forEach((dataset)=>{
-        dataset.data[0] = this.investmentResults()?.invested ?? 0;
-        dataset.data[1] = this.investmentResults()?.profit ?? 0;
+        dataset.data[0] = this.investmentResults().invested
+        dataset.data[1] = this.investmentResults().totalValue - this.investmentResults().invested
       })
       this.chart?.update();
 
@@ -35,7 +35,7 @@ export class GraphComponent implements OnInit {
         datasets:[
           {
             label:"Investované",
-            data:[this.investmentResults()?.invested ?? 0,this.investmentResults()?.profit ?? 0]
+            data:[this.investmentResults()?.invested ?? 0,this.investmentResults()?.totalValue ?? 0]
           },
         ]
       }

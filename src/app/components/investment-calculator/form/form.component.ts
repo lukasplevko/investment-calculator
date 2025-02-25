@@ -41,33 +41,25 @@ export class FormComponent implements OnInit{
 
   onFormValuesChanged = output<InvestmentCalculationInputs>();
 
-  private defaultValidations(
-    min=this.DEFAULT_INVESTMENT_SETTINGS.MINIMAL_MONTHLY_INVESTMENT,
-    max=this.DEFAULT_INVESTMENT_SETTINGS.MAXIMAL_MONTHLY_INVESTMENT){
-    return [
-      Validators.required,
-      Validators.min(min),
-      Validators.max(max),
-    ]
-  }
-
   investmentCalculatorForm = new FormGroup({
-    monthlyInvestment: new FormControl(20,[
-      Validators.required,
-      Validators.min(this.minimalMonthlyInvestment),
-      Validators.max(this.maximalMonthlyInvestment)
-    ]),
-    initialInvestment: new FormControl(20,[
-      Validators.required,
-      Validators.min(this.minimalInitialInvestment),
-      Validators.max(this.maximalInitialInvestment),
-    ]),
-    investmentDuration:new FormControl(2,[
-      Validators.required,
-      Validators.min(this.minimalInvestmentDuration),
-      Validators.max(this.maximalInvestmentDuration),
-      ]
-    ),
+    monthlyInvestment: new FormControl({
+      value:20,
+      disabled:false,
+    },{
+      validators:[Validators.required,Validators.min(this.minimalMonthlyInvestment),Validators.max(this.maximalMonthlyInvestment)]
+    }),
+    initialInvestment: new FormControl({
+      value:20,
+      disabled:false
+    },{
+      validators:[Validators.required,Validators.min(this.minimalInitialInvestment), Validators.max(this.maximalMonthlyInvestment)]
+    }),
+    investmentDuration:new FormControl({
+      value: 2,
+      disabled:false
+      },{
+      validators:[Validators.required, Validators.min(this.minimalInvestmentDuration),Validators.max(this.maximalInvestmentDuration)]
+    }),
     investmentStrategy: new FormControl<EInvestmentStrategies>(
       EInvestmentStrategies.conservative,[
         Validators.required,
@@ -85,7 +77,7 @@ export class FormComponent implements OnInit{
 
     this.investmentCalculatorForm.valueChanges.
     pipe(
-      debounceTime(300),
+      debounceTime(100),
       map((val)=>val as InvestmentCalculationInputs)
     )
       .subscribe((values)=>{

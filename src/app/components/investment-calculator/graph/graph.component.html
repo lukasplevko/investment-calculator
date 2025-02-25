@@ -7,16 +7,16 @@
         Investované:
       </span>
       <p class="investment-box__invested">
-        {{investmentResults()?.invested | currency: 'EUR' }}
+        {{investmentResults().invested | currency: 'EUR' }}
       </p>
     </div>
 
     <div class="investment-box">
       <span>
-        Zisk:
+        Úroky:
       </span>
       <p class="investment-box__profit">
-        {{investmentResults()?.profit | currency:'EUR'}}
+        {{investmentResults().totalValue - investmentResults().invested | currency:'EUR'}}
       </p>
     </div>
 
@@ -25,9 +25,7 @@
         Spolu:
       </span>
       <p class="investment-box__sum">
-        @if (investmentResults()?.invested && investmentResults()?.profit){
-          {{(investmentResults()?.profit! + investmentResults()?.invested!) | currency:'EUR'}}
-        }
+    {{ investmentResults().totalValue | currency:'EUR' }}
       </p>
     </div>
   </header>
